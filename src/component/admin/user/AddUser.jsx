@@ -47,7 +47,7 @@ export default function AddUser() {
             toast.info("Username sudah terdaftar");
         } else {
             try {
-                await axios.post("http://localhost:8080/user/", addUser, {headers})
+                await axios.post("http://localhost:8080/user/add", addUser, {headers})
                 navigate("/")
             } catch (err) {
                 console.log(err)

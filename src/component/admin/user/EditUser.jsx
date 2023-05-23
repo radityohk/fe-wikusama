@@ -89,7 +89,7 @@ export default function EditUser() {
                                     <option value="">Role</option>
                                     <option value="kasir">Kasir</option>
                                     <option value="admin">Admin</option>
-                                    <option value="manager">Manager</option>
+                                    <option value="manajer">Manajer</option>
                                 </select>
                             </div>
                             <div>
