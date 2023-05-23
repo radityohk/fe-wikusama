@@ -1,1 +1,1 @@
-langsung pake aja 
+sung pake
