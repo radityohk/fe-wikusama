@@ -1,11 +1,12 @@
-const express = require(`express`)
-const app = express()
-app.use(express.json())
-const userController =
-require(`../controllers/meja.controller`)
-app.get("/", userController.getAllMeja)
-app.post("/add", userController.addMeja)
-app.post("/find", userController.findMeja)
-app.put("/:id", userController.updateMeja)
-app.delete("/:id", userController.deleteMeja)
-module.exports = app
+const express = require(`express`);
+const app = express();
+app.use(express.json());
+const userController = require(`../controllers/meja.controller`);
+const { auth, isRole } = require(`../auth/auth`);
+
+app.get("/", auth, userController.getAllMeja);
+app.post("/add", auth, userController.addMeja);
+app.post("/find", auth, userController.findMeja);
+app.put("/:id", auth, userController.updateMeja);
+app.delete("/:id", auth, userController.deleteMeja);
+module.exports = app;

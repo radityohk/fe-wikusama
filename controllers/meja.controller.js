@@ -37,6 +37,25 @@ exports.findMeja = async (request, response) => {
   });
 };
 
+exports.findMenubyId = async (request, response) => {
+  let id_meja = request.params.id;
+
+  mejaModel
+    .findOne({ where: { id: id_meja } })
+    .then((result) => {
+      return response.json({
+        success: true,
+        data: result,
+      });
+    })
+    .catch((error) => {
+      return response.json({
+        success: false,
+        message: error.message,
+      });
+    });
+};
+
 exports.addMeja = async (request, response) => {
     let data = {
         nomor_meja: request.body.nomor_meja
@@ -57,7 +76,8 @@ exports.addMeja = async (request, response) => {
 
 exports.updateMeja = (request, response) => {
     let data = {
-      nomor_meja: request.body.nomor_meja
+      nomor_meja: request.body.nomor_meja,
+      status: request.body.status
     }
 
     let id_meja = request.params.id;

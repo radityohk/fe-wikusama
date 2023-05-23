@@ -27,7 +27,9 @@ exports.findDetail = async (request, response) => {
     where: {
       [Op.or]: [
         { id_transaksi: { [Op.substring]: keyword } },
+        "=================================",
         { id_menu: { [Op.substring]: keyword } },
+        "=================================",
         { harga: { [Op.substring]: keyword } },
       ],
     },

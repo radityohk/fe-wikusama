@@ -20,6 +20,25 @@ exports.getAllMenu = async (request, response) => {
     })
 };
 
+exports.findMenubyId = async (request, response) => {
+  let id_menu = request.params.id;
+
+  menuModel
+    .findOne({ where: { id: id_menu } })
+    .then((result) => {
+      return response.json({
+        success: true,
+        data: result,
+      });
+    })
+    .catch((error) => {
+      return response.json({
+        success: false,
+        message: error.message,
+      });
+    });
+};
+
 exports.findMenu = async (request, response) => {
   let keyword = request.body.keyword;
 
@@ -39,6 +58,8 @@ exports.findMenu = async (request, response) => {
     message: `All menu have been loaded`,
   });
 };
+
+
 
 exports.addMenu = async (request, response) => {
   upload(request, response, async (error) => {
@@ -75,18 +96,30 @@ exports.addMenu = async (request, response) => {
 };
 
 exports.updateMenu = (request, response) => {
-    let data = {
-      nomor_menu: request.body.nomor_menu
+  upload(request, response, async (error) => {
+    if (error) {
+      return response.json({ message: error });
     }
 
-    let id_menu = request.params.id;
+    if (!request.file) {
+      return response.json({ message: `Nothing to Upload` });
+    }
 
+    let data = {
+      nama_menu: request.body.nama_menu,
+      jenis: request.body.jenis,
+      deskripsi: request.body.deskripsi,
+      gambar: request.file.filename,
+      harga: request.body.harga
+   }
+   let id_menu = request.params.id
 
-    menuModel.update(data, { where: { id: id_menu } })
+   menuModel.update(data, { where: { id: id_menu } })
     .then(result => {
         response.json ({
             success: true,
             message: "Data Berhasil Diganti",
+            data: result
         })
     })
     .catch(error => {
@@ -94,6 +127,7 @@ exports.updateMenu = (request, response) => {
             message: error.message
         })
     })
+})
 };
 
 exports.deleteMenu = (request, response) => {

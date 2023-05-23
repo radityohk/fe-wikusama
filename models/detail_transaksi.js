@@ -10,13 +10,19 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      this.belongsTo(models.menu, {
+        foreignKey: "id_menu"
+      })
+      // parent: menu, child: detail_transaksi
+      this.belongsTo(models.transaksi, {
+        foreignKey: "id_transaksi"
+      })
     }
   }
   detail_transaksi.init({
     id_transaksi: DataTypes.INTEGER,
     id_menu: DataTypes.INTEGER,
-    harga: DataTypes.INTEGER
+    harga: DataTypes.INTEGER,
   }, {
     sequelize,
     modelName: 'detail_transaksi',

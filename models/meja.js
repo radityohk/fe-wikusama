@@ -10,11 +10,15 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      this.hasMany(models.transaksi, {
+        foreignKey: "id_meja",
+        as: "transaksi"
+        })
     }
   }
   meja.init({
-    nomor_meja: DataTypes.STRING
+    nomor_meja: DataTypes.STRING,
+    status: DataTypes.ENUM('tersedia', 'tidak tersedia')
   }, {
     sequelize,
     modelName: 'meja',

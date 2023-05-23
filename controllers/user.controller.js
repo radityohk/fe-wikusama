@@ -5,47 +5,34 @@ const fs = require(`fs`);
 const md5 = require(`md5`);
 const mysql = require(`mysql2`);
 
-const jsonwebtoken = require("jsonwebtoken");
-const SECRET_KEY = "secretcode";
+const { isRole } = require(`../auth/auth`)
+// const auth = require("../auth/auth")
+const jwt = require("jsonwebtoken");
+const SECRET_KEY = (`akucintabackend`)
+
 
 exports.login = async (request, response) => {
-  try {
-    const params = {
-      username: request.body.username,
-      password: md5(request.body.password),
-    };
 
-    const findUser = await userModel.findOne({ where: params });
-    if (findUser == null) {
-      return response.status(404).json({
-        message: "Email atau password salah",
-        err: error,
-      });
-    }
-    console.log(findUser);
-    //generate jwt token
-    let tokenPayLoad = {
-      id_user: findUser.id_user,
-      username: findUser.username,
-      role: findUser.role,
-    };
-    tokenPayLoad = JSON.stringify(tokenPayLoad);
-    let token = await jsonwebtoken.sign(tokenPayLoad, SECRET_KEY);
+  let result = await userModel.findAll({ where: {
+    username: request.body.username,
+    password: md5(request.body.password)
+  } });
 
-    return response.status(200).json({
-      message: "Success login",
-      data: {
-        token: token,
-        id_user: findUser.id_user,
-        username: findUser.username,
-        role: findUser.role,
-      },
+  console.log(result)
+
+  if (result) { 
+    let payload = JSON.stringify(result); 
+    let token = jwt.sign(payload, SECRET_KEY); 
+    response.status(200).json({ 
+      status: "success",
+      logged: true,
+      token: token,
+      data: result,
     });
-  } catch (error) {
-    console.log(error);
-    return response.status(500).json({
-      message: "Internal error",
-      err: error,
+  } else {
+    response.status(400).json({ 
+      status: "error",
+      message: "Password salah",
     });
   }
 };
@@ -83,6 +70,25 @@ exports.findUser = async (request, response) => {
     data: user,
     message: `All user have been loaded`,
   });
+};
+
+exports.findMenubyId = async (request, response) => {
+  let id_menu = request.params.id;
+
+  userModel
+    .findOne({ where: { id: id_menu } })
+    .then((result) => {
+      return response.json({
+        success: true,
+        data: result,
+      });
+    })
+    .catch((error) => {
+      return response.json({
+        success: false,
+        message: error.message,
+      });
+    });
 };
 
 exports.addUser = async (request, response) => {
