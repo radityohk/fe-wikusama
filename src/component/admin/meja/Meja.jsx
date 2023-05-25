@@ -87,7 +87,7 @@ export default function Meja() {
             toast.info("Nomor meja sudah terdaftar");
         } else {
             try {
-                await axios.post("http://localhost:8080/meja/", addMeja, {headers})
+                await axios.post("http://localhost:8080/meja/add", addMeja, {headers})
                 window.location.reload()
             } catch (err) {
                 console.log(err)

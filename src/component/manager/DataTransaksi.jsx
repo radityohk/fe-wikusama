@@ -17,7 +17,7 @@ export default function DataTransaksi() {
         const fecthDatas = async () => {
             try {
                 const response = await axios.get("http://localhost:8080/transaksi/", { headers })
-                setTransaksi(response.data.transaksi)
+                setTransaksi(response.data.data)
             } catch (err) {
                 console.log(err)
             }
@@ -70,7 +70,7 @@ export default function DataTransaksi() {
                         {selectedDate === null || selectedDate === undefined ? (
                             <>
                                 {transaksi.map((transaksi) => (
-                                    <tr key={transaksi.id_transaksi} className="hover:bg-gray-50">
+                                    <tr key={transaksi.id} className="hover:bg-gray-50">
                                         <td className="px-6 py-4">{transaksi.user.nama_user}</td>
                                         <td className="px-6 py-4">{dateFormat(transaksi.tgl_transaksi)}</td>
                                         <td className="px-6 py-4">{transaksi.total}</td>

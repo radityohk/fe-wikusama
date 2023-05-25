@@ -66,7 +66,7 @@ function App() {
         </Routes>
       </Router>
     )
-  } else if (sessionStorage.getItem('logged') === "true" && sessionStorage.getItem('role') === "manager") {
+  } else if (sessionStorage.getItem('logged') === "true" && sessionStorage.getItem('role') === "manajer") {
     //Pages role manager
     return (
       <Router>

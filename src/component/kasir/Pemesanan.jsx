@@ -160,7 +160,7 @@ export default function Pemesanan() {
                         <option
                             key={option.id_meja}
                             value={option.nomor_meja}
-                            disabled={option.status === "tidak_tersedia"}
+                            disabled={option.status === "tidak tersedia"}
                         >
                             Meja nomor {option.nomor_meja}
                         </option>
