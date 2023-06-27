@@ -10,10 +10,16 @@ const moment = require('moment')
 
 exports.getAllTransaksi = async (request, response) => {
   transaksiModel.findAll({
-    include: [{
+    include: [
+      {
       model: mejaModel,
-      required: true, // Use "required: true" for inner join, or "required: false" for left join
-    }],
+      required: true, 
+      },
+      {
+        model: userModel,
+        required: true,
+      },
+  ],
   })
     .then(result => {
         response.json({
@@ -48,14 +54,12 @@ exports.findTransaksi = async (request, response) => {
   });
 };
 
-exports.findTransaksi = async (request, response) => {
+exports.findTransaksibyName = async (request, response) => {
   let keyword = request.body.keyword;
 
   let transaksi = await transaksiModel.findAll({
     where: {
       [Op.or]: [
-        { id_user: { [Op.substring]: keyword } },
-        { id_meja: { [Op.substring]: keyword } },
         { nama_pelanggan: { [Op.substring]: keyword } },
         { status: { [Op.substring]: keyword } },
       ],
