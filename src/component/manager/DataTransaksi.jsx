@@ -8,17 +8,22 @@ export default function DataTransaksi() {
     const headers = {
         'Authorization': `Bearer ${sessionStorage.getItem('token')}`
     };
-    const [transaksi, setTransaksi] = useState([])
+    const [transaksi, setTransaksi] = useState([]);
     const [selectedDate, setSelectedDate] = useState(null);
     const [filteredTransaksi, setFilteredTransaksi] = useState(null);
     const [filterMonthly, setFilterMonthly] = useState(false);
     const [filteredMonth, setFilteredMonth] = useState(null);
+    const [kasirFilter, setKasirFilter] = useState("");
+    const [uniqueKasirs, setUniqueKasirs] = useState([]);
 
     useEffect(() => {
         const fecthDatas = async () => {
             try {
                 const response = await axios.get("http://localhost:8080/transaksi/", { headers })
                 setTransaksi(response.data.data)
+
+                const uniqueKasirNames = [...new Set(response.data.data.map(item => item.user.nama_user))];
+                setUniqueKasirs(uniqueKasirNames);
             } catch (err) {
                 console.log(err)
             }
@@ -32,6 +37,14 @@ export default function DataTransaksi() {
         const formattedDate = dateObj.toLocaleDateString('id-ID', options);
         return formattedDate;
     }
+
+    const resetFilters = () => {
+        setSelectedDate(null);
+        setFilteredTransaksi(null);
+        setKasirFilter("");
+        setFilterMonthly(false);
+        setFilteredMonth(null);
+    };
 
     const filterByDate = (date) => {
         if (date) {
@@ -58,6 +71,23 @@ export default function DataTransaksi() {
         }
     };
 
+    const filterByKasir = (kasirName) => {
+        if (kasirName === "Pilih Kasir") {
+            resetFilters(); // Mengatur ulang filter saat memilih "Pilih Kasir"
+        } else {
+            const filteredData = transaksi.filter((t) => {
+                return t.user.nama_user === kasirName;
+            });
+            setFilteredTransaksi(filteredData);
+            setSelectedDate(null);
+            setKasirFilter(kasirName);
+
+             if (filterMonthly) {
+            setFilterMonthly(true);
+        }
+        }
+    };
+
     return (
         <div>
             <div className="mt-5 mx-5 flex">
@@ -65,9 +95,10 @@ export default function DataTransaksi() {
                     <span className="flex-none">Filter By  : </span>
                     <select className="pl-1 bg-gray-100" value={filterMonthly ? "monthly" : "daily"} onChange={(e) => {
                         if (e.target.value === "monthly") {
-                            setSelectedDate(null); // Reset daily filter
+                            resetFilters(); // Mengatur ulang filter saat beralih ke "Bulanan"
                             setFilterMonthly(true);
                         } else {
+                            resetFilters(); // Mengatur ulang filter saat beralih ke "Harian"
                             setFilterMonthly(false);
                         }
                     }}>
@@ -75,6 +106,21 @@ export default function DataTransaksi() {
                         <option value="monthly">Bulanan</option>
                     </select>
                     {filterMonthly ? (
+                        <>
+                        <select
+                                className="pl-1 bg-gray-100"
+                                value={kasirFilter}
+                                onChange={(e) => {
+                                    filterByKasir(e.target.value);
+                                }}
+                            >
+                                <option value="">Pilih Kasir</option>
+                                {uniqueKasirs.map((kasir, index) => (
+                                    <option key={index} value={kasir}>
+                                        {kasir}
+                                    </option>
+                                ))}
+                            </select>
                         <DatePicker
                             className="pl-1 bg-gray-100"
                             showMonthYearPicker
@@ -84,15 +130,32 @@ export default function DataTransaksi() {
                                 filterByMonth(date);
                             }}
                         />
+                        </>
                     ) : (
-                        <DatePicker
-                            className="pl-1 bg-gray-100"
-                            selected={selectedDate}
-                            onChange={(date) => {
-                                setSelectedDate(date);
-                                filterByDate(date);
-                            }}
-                        />
+                        <>
+                            <select
+                                className="pl-1 bg-gray-100"
+                                value={kasirFilter}
+                                onChange={(e) => {
+                                    filterByKasir(e.target.value);
+                                }}
+                            >
+                                <option value="">Pilih Kasir</option>
+                                {uniqueKasirs.map((kasir, index) => (
+                                    <option key={index} value={kasir}>
+                                        {kasir}
+                                    </option>
+                                ))}
+                            </select>
+                            <DatePicker
+                                className="pl-1 bg-gray-100"
+                                selected={selectedDate}
+                                onChange={(date) => {
+                                    setSelectedDate(date);
+                                    filterByDate(date);
+                                }}
+                            />
+                        </>
                     )}
                 </div>
             </div>
@@ -132,7 +195,7 @@ export default function DataTransaksi() {
                                     <tr key={transaksi.id_transaksi} className="hover:bg-gray-50">
                                         <td className="px-6 py-4">{transaksi.user.nama_user}</td>
                                         <td className="px-6 py-4">{dateFormat(transaksi.tgl_transaksi)}</td>
-                                        <td className="px-6 py-4">{transaksi.detail_transaksi.qty}</td>
+                                        <td className="px-6 py-4">{transaksi.detail_transaksi[0].qty}</td>
                                         <td className="px-6 py-4">{transaksi.total}</td>
                                         <td className="px-6 py-4">
                                             <div className="flex gap-2">
