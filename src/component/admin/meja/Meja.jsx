@@ -127,6 +127,9 @@ export default function Meja() {
                                     <th scope="col" className="px-6 py-3 text-center">
                                         Nomor Meja
                                     </th>
+                                    <th scope="col" className="px-6 py-3 text-center">
+                                        Status
+                                    </th>
                                     <th scope="col" className="pl-6 py-3 text-right">
                                         <span className="sr-only">Edit / Delete</span>
                                     </th>
@@ -136,6 +139,7 @@ export default function Meja() {
                                 {meja && meja.map((meja, index) => (
                                     <tr key={meja.id} className="bg-white border-b hover:bg-gray-50">
                                         <td className="px-6 py-4 text-center">{meja.nomor_meja}</td>
+                                        <td className="px-6 py-4 text-center">{meja.status}</td>
                                         <td className="pl-6 py-4 text-right">
                                             <button onClick={() => selectDataEdit(meja.id, meja.nomor_meja)} className="font-medium text-blue-600 hover:underline">Edit</button>
                                             <button onClick={() => selectIdDelete(meja.id)} className="mx-4 font-medium text-red-600 hover:underline">  Delete</button>

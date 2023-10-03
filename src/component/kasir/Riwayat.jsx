@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { PrintBill } from "./PrintBill";
+import { PDFViewer } from "@react-pdf/renderer";
+import NotaPDF from "./Nota";
 
 export default function Riwayat() {
   const headers = {
@@ -11,15 +12,18 @@ export default function Riwayat() {
   const [keyword, setKeyword] = useState("");
   const [filteredName, setFilteredName] = useState(null);
   const [namaPelanggan, setNamaPelanggan] = useState("");
+  const [selectedTransaksi, setSelectedTransaksi] = useState(null);
+  const [showNota, setShowNota] = useState(false);
 
   useEffect(() => {
     const fecthDatas = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/transaksi/", {
+        const user_id = sessionStorage.getItem('id_user');
+        const response = await axios.get(`http://localhost:8080/transaksi/${user_id}`, {
           headers,
         });
         setTransaksi(response.data.data);
-        console.log(transaksi);
+        console.log();
 
         const res = await axios.get("http://localhost:8080/meja/", { headers });
         setMeja(res.data.data);
@@ -97,6 +101,11 @@ export default function Riwayat() {
     }
   };
 
+  const handleCetakNota = (transaksi) => {
+    setSelectedTransaksi(transaksi);
+    setShowNota(true);
+  };
+
   return (
     <div>
       <div className="flex p-2 ml-5 bg-gray-100 rounded-md border shadow-sm">
@@ -139,69 +148,99 @@ export default function Riwayat() {
           <tbody className="divide-y divide-gray-100 border-t border-gray-100">
             {filteredName && filteredName.length > 0
               ? filteredName.map((transaksi) => (
-                  <tr key={transaksi.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4">{transaksi.nama_pelanggan}</td>
-                    <td className="px-6 py-4">
-                      Meja nomor {transaksi.id_meja}
-                    </td>
-                    <td className="px-6 py-4">{transaksi.total}</td>
-                    <td className="px-6 py-4">
-                      {transaksi.status === "belum bayar" ? (
-                        <div className="flex gap-2">
-                          <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-1 text-xs font-semibold text-blue-600">
-                            Belum Lunas
-                          </span>
-                          <button
-                            onClick={() => handleBayar(transaksi.id)}
-                            className="inline-flex items-center gap-1 rounded-full bg-indigo-50 px-2 py-1 text-xs font-semibold text-rose-600"
-                          >
-                            Bayar
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="flex gap-2">
-                          <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-1 text-xs font-semibold text-blue-600">
-                            Lunas
-                          </span>
-                        </div>
-                      )}
-                    </td>
-                  </tr>
-                ))
+                <tr key={transaksi.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4">{transaksi.nama_pelanggan}</td>
+                  <td className="px-6 py-4">
+                    Meja nomor {transaksi.id_meja}
+                  </td>
+                  <td className="px-6 py-4">{transaksi.total}</td>
+                  <td className="px-6 py-4">
+                    {transaksi.status === "belum bayar" ? (
+                      <div className="flex gap-2">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-1 text-xs font-semibold text-blue-600">
+                          Belum Lunas
+                        </span>
+                        <button
+                          onClick={() => handleBayar(transaksi.id)}
+                          className="inline-flex items-center gap-1 rounded-full bg-indigo-50 px-2 py-1 text-xs font-semibold text-rose-600"
+                        >
+                          Bayar
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="flex gap-2">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-1 text-xs font-semibold text-blue-600">
+                          Lunas
+                        </span>
+                      </div>
+                    )}
+                  </td>
+                  <td className="px-6 py-4">
+                    <button
+                      onClick={handleCetakNota}
+                      className="inline-flex items-center gap-1 rounded-full bg-green-50 px-2 py-1 text-xs font-semibold text-green-600"
+                    >
+                      Cetak Nota
+                    </button>
+                  </td>
+                </tr>
+              ))
               : transaksi.map((transaksi) => (
-                  <tr key={transaksi.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4">{transaksi.nama_pelanggan}</td>
-                    <td className="px-6 py-4">
-                      Meja nomor {transaksi.meja.nomor_meja}
-                    </td>
-                    <td className="px-6 py-4">{transaksi.total}</td>
-                    <td className="px-6 py-4">
-                      {transaksi.status === "belum bayar" ? (
-                        <div className="flex gap-2">
-                          <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-1 text-xs font-semibold text-blue-600">
-                            Belum Lunas
-                          </span>
-                          <button
-                            onClick={() => handleBayar(transaksi.id)}
-                            className="inline-flex items-center gap-1 rounded-full bg-indigo-50 px-2 py-1 text-xs font-semibold text-rose-600"
-                          >
-                            Bayar
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="flex gap-2">
-                          <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-1 text-xs font-semibold text-blue-600">
-                            Lunas
-                          </span>
-                        </div>
-                      )}
-                    </td>
-                    
-                  </tr>
-                ))}
+                <tr key={transaksi.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4">{transaksi.nama_pelanggan}</td>
+                  <td className="px-6 py-4">
+                    Meja nomor {transaksi.meja.nomor_meja}
+                  </td>
+                  <td className="px-6 py-4">{transaksi.total}</td>
+                  <td className="px-6 py-4">
+                    {transaksi.status === "belum bayar" ? (
+                      <div className="flex gap-2">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-1 text-xs font-semibold text-blue-600">
+                          Belum Lunas
+                        </span>
+                        <button
+                          onClick={() => handleBayar(transaksi.id)}
+                          className="inline-flex items-center gap-1 rounded-full bg-indigo-50 px-2 py-1 text-xs font-semibold text-rose-600"
+                        >
+                          Bayar
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="flex gap-2">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-1 text-xs font-semibold text-blue-600">
+                          Lunas
+                        </span>
+                      </div>
+                    )}
+                  </td>
+                  <td>
+                  <NotaPDF transaksi={transaksi} />
+                  </td>
+                  {/* <td className="px-6 py-4">
+                    {transaksi.status === "lunas" && !showNota ? (
+                      <button
+                        onClick={() => handleCetakNota(transaksi)}
+                        className="inline-flex items-center gap-1 rounded-full bg-green-50 px-2 py-1 text-xs font-semibold text-green-600"
+                      >
+                        Cetak Nota
+                      </button>
+                    ) : null}
+                  </td> */}
+                  {/* {showNota && selectedTransaksi && (
+                    <tr>
+                      <td colSpan="5" className="px-6 py-4">
+                        <PDFViewer width="600" height="800">
+                          <NotaPDF transaksi={selectedTransaksi} />
+                        </PDFViewer>
+                      </td>
+                    </tr>
+                  )} */}
+                </tr>
+              ))}
           </tbody>
         </table>
       </div>
+
     </div>
   );
 }
