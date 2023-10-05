@@ -17,7 +17,7 @@ export default function DataTransaksi() {
     const [uniqueKasirs, setUniqueKasirs] = useState([]);
 
     useEffect(() => {
-        const fecthDatas = async () => {
+        const fetchData = async () => {
             try {
                 const response = await axios.get("http://localhost:8080/transaksi/", { headers })
                 setTransaksi(response.data.data)
@@ -28,7 +28,7 @@ export default function DataTransaksi() {
                 console.log(err)
             }
         }
-        fecthDatas()
+        fetchData()
     }, [])
 
     function dateFormat(date) {
@@ -62,6 +62,8 @@ export default function DataTransaksi() {
             const filteredData = transaksi.filter((t) => {
                 const tgl_transaksi = new Date(t.tgl_transaksi);
                 const selectedMonth = new Date(date);
+                console.log(tgl_transaksi)
+                console.log(selectedMonth)
                 return tgl_transaksi.getMonth() === selectedMonth.getMonth() &&
                     tgl_transaksi.getFullYear() === selectedMonth.getFullYear();
             });
@@ -82,10 +84,29 @@ export default function DataTransaksi() {
             setSelectedDate(null);
             setKasirFilter(kasirName);
 
-             if (filterMonthly) {
-            setFilterMonthly(true);
+            if (filterMonthly) {
+                setFilterMonthly(true);
+            }
         }
+    };
+
+    const filterData = () => {
+        let filteredData = [...transaksi];
+
+        if (selectedDate) {
+            filteredData = filteredData.filter((t) => {
+                const tgl_transaksi = new Date(t.tgl_transaksi);
+                return tgl_transaksi.toDateString() === selectedDate.toDateString();
+            });
         }
+
+        if (kasirFilter !== "" && kasirFilter !== "Pilih Kasir") {
+            filteredData = filteredData.filter((t) => {
+                return t.user.nama_user === kasirFilter;
+            });
+        }
+
+        return filteredData;
     };
 
     return (
@@ -93,34 +114,38 @@ export default function DataTransaksi() {
             <div className="mt-5 mx-5 flex">
                 <div className="flex p-2 bg-gray-100 rounded-md border shadow-sm">
                     <span className="flex-none">Filter By  : </span>
-                    <select className="pl-1 bg-gray-100" value={filterMonthly ? "monthly" : "daily"} onChange={(e) => {
-                        if (e.target.value === "monthly") {
-                            resetFilters(); // Mengatur ulang filter saat beralih ke "Bulanan"
-                            setFilterMonthly(true);
-                        } else {
-                            resetFilters(); // Mengatur ulang filter saat beralih ke "Harian"
-                            setFilterMonthly(false);
-                        }
-                    }}>
+                    {/* Dropdown untuk filter Tanggal (Harian/Bulanan) */}
+                    <select
+                        className="pl-1 bg-gray-100"
+                        value={filterMonthly ? "monthly" : "daily"}
+                        onChange={(e) => {
+                            if (e.target.value === "monthly") {
+                                resetFilters(); // Mengatur ulang filter saat beralih ke "Bulanan"
+                                setFilterMonthly(true);
+                            } else {
+                                resetFilters(); // Mengatur ulang filter saat beralih ke "Harian"
+                                setFilterMonthly(false);
+                            }
+                        }}
+                    >
                         <option value="daily">Harian</option>
                         <option value="monthly">Bulanan</option>
                     </select>
+                    <select
+                        className="pl-1 bg-gray-100"
+                        value={kasirFilter}
+                        onChange={(e) => {
+                            filterByKasir(e.target.value);
+                        }}
+                    >
+                        <option value="">Pilih Kasir</option>
+                        {uniqueKasirs.map((kasir, index) => (
+                            <option key={index} value={kasir}>
+                                {kasir}
+                            </option>
+                        ))}
+                    </select>
                     {filterMonthly ? (
-                        <>
-                        <select
-                                className="pl-1 bg-gray-100"
-                                value={kasirFilter}
-                                onChange={(e) => {
-                                    filterByKasir(e.target.value);
-                                }}
-                            >
-                                <option value="">Pilih Kasir</option>
-                                {uniqueKasirs.map((kasir, index) => (
-                                    <option key={index} value={kasir}>
-                                        {kasir}
-                                    </option>
-                                ))}
-                            </select>
                         <DatePicker
                             className="pl-1 bg-gray-100"
                             showMonthYearPicker
@@ -130,35 +155,19 @@ export default function DataTransaksi() {
                                 filterByMonth(date);
                             }}
                         />
-                        </>
                     ) : (
-                        <>
-                            <select
-                                className="pl-1 bg-gray-100"
-                                value={kasirFilter}
-                                onChange={(e) => {
-                                    filterByKasir(e.target.value);
-                                }}
-                            >
-                                <option value="">Pilih Kasir</option>
-                                {uniqueKasirs.map((kasir, index) => (
-                                    <option key={index} value={kasir}>
-                                        {kasir}
-                                    </option>
-                                ))}
-                            </select>
-                            <DatePicker
-                                className="pl-1 bg-gray-100"
-                                selected={selectedDate}
-                                onChange={(date) => {
-                                    setSelectedDate(date);
-                                    filterByDate(date);
-                                }}
-                            />
-                        </>
+                        <DatePicker
+                            className="pl-1 bg-gray-100"
+                            selected={selectedDate}
+                            onChange={(date) => {
+                                setSelectedDate(date);
+                                filterByDate(date);
+                            }}
+                        />
                     )}
                 </div>
             </div>
+
             <div className="overflow-hidden rounded-lg border border-gray-200 shadow-md m-5">
                 <table className="w-full border-collapse bg-white text-left text-sm text-gray-500">
                     <thead className="bg-gray-50">
@@ -191,7 +200,7 @@ export default function DataTransaksi() {
                             </>
                         ) : (
                             <>
-                                {filteredTransaksi.map((transaksi) => (
+                                {filterData().map((transaksi) => (
                                     <tr key={transaksi.id_transaksi} className="hover:bg-gray-50">
                                         <td className="px-6 py-4">{transaksi.user.nama_user}</td>
                                         <td className="px-6 py-4">{dateFormat(transaksi.tgl_transaksi)}</td>
