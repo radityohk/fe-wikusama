@@ -61,13 +61,13 @@ export default function DataTransaksi() {
         if (date) {
             const filteredData = transaksi.filter((t) => {
                 const tgl_transaksi = new Date(t.tgl_transaksi);
-                const selectedMonth = new Date(date);
-                console.log(tgl_transaksi)
-                console.log(selectedMonth)
-                return tgl_transaksi.getMonth() === selectedMonth.getMonth() &&
-                    tgl_transaksi.getFullYear() === selectedMonth.getFullYear();
+                // console.log(tgl_transaksi)
+                console.log(tgl_transaksi.getMonth)
+                return tgl_transaksi.getMonth() === date.getMonth() &&
+                    tgl_transaksi.getFullYear() === date.getFullYear();
             });
             setFilteredTransaksi(filteredData);
+            console.log(filteredData)
             setFilterMonthly(true); // Set filter monthly active
             setFilteredMonth(date); // Save filtered month
         }
@@ -200,7 +200,7 @@ export default function DataTransaksi() {
                             </>
                         ) : (
                             <>
-                                {filterData().map((transaksi) => (
+                                {filteredTransaksi.map((transaksi) => (
                                     <tr key={transaksi.id_transaksi} className="hover:bg-gray-50">
                                         <td className="px-6 py-4">{transaksi.user.nama_user}</td>
                                         <td className="px-6 py-4">{dateFormat(transaksi.tgl_transaksi)}</td>

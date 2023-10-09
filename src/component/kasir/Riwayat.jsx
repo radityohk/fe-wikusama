@@ -86,20 +86,16 @@ export default function Riwayat() {
     }
   };
 
-  const handleSearch = async () => {
-    try {
-      const response = await axios.post(
-        "http://localhost:8080/transaksi/findby",
-        { keyword },
-        { headers }
-      );
-      const data = await response.data.data;
-      setFilteredName(data);
-      console.log(filteredName);
-    } catch (error) {
-      console.error("Error:", error);
-    }
+  const handleSearch = (e) => {
+    const inputKeyword = e.target.value;
+    setKeyword(inputKeyword);
+
+    const filteredData = transaksi.filter((item) =>
+      item.nama_pelanggan.toLowerCase().includes(inputKeyword.toLowerCase())
+    );
+    setFilteredName(filteredData);
   };
+  
 
   const handleCetakNota = (transaksi) => {
     setSelectedTransaksi(transaksi);
@@ -108,20 +104,14 @@ export default function Riwayat() {
 
   return (
     <div>
-      <div className="flex p-2 ml-5 bg-gray-100 rounded-md border shadow-sm">
-        <input
+      <div className="flex max-w-min mt-5 p-2 ml-5 bg-gray-100 rounded-md border shadow-sm">
+      <input
           type="text"
           value={keyword}
           className="pl-1 bg-gray-100"
-          onChange={(e) => setKeyword(e.target.value)}
-          placeholder="Search keyword"
+          onChange={handleSearch}
+          placeholder="Cari nama pelanggan"
         />
-        <button
-          className="ml-2 bg-cyan-100 p-1 rounded-md"
-          onClick={handleSearch}
-        >
-          Search
-        </button>
       </div>
       <div className="overflow-hidden rounded-lg border border-gray-200 shadow-md m-5">
         <table className="w-full border-collapse bg-white text-left text-sm text-gray-500">

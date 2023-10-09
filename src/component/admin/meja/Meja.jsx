@@ -122,7 +122,7 @@ export default function Meja() {
                 <div className="flex flex-wrap gap-5 ">
                     <div className="w-full relative overflow-x-auto shadow-md sm:rounded-lg">
                         <table className="w-full text-sm text-left text-gray-500">
-                            <thead className="text-xs text-white uppercase bg-gray-800">
+                            <thead className="text-xs text-white uppercase bg-green-600">
                                 <tr>
                                     <th scope="col" className="px-6 py-3 text-center">
                                         Nomor Meja

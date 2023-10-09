@@ -26,7 +26,7 @@ export default function TabsKasir() {
         window.location.reload()
     }
     return (
-        <div className="bg-white h-16 px-4 flex justify-between items-center border-b border-gray-200">
+        <div className="h-16 px-4 flex justify-between items-center border-b bg-green-500 border-green-300 shadow-xl">
             <div className="flex flex-wrap text-sm font-medium text-center ">
                 {TABS_LINK.map((item) => (
                     <TabsLink key={item.key} item={item} />
@@ -43,7 +43,7 @@ function TabsLink({ item }) {
     const { pathname } = useLocation()
 
     return (
-        <Link to={item.path} className={classNames(pathname === item.path ? 'inline-block mx-1 px-4 py-3 text-white bg-sky-600 rounded-lg hover:bg-sky-600' : '', linkClass)}>
+        <Link to={item.path} className={classNames(pathname === item.path ? 'inline-block mx-1 px-4 py-3 text-white bg-green-700 rounded-lg hover:bg-green-800' : '', linkClass)}>
             {item.label}
         </Link>
     )

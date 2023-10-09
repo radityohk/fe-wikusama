@@ -8,10 +8,9 @@ const BarChartComponent = () => {
   };
 
   const [data, setData] = useState([]);
-  const [menuData, setMenuData] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost:8080/detail', { headers })
+    axios.get('http://localhost:8080/detail/statistik', { headers })
       .then(response => {
         setData(response.data.data);
       })
@@ -19,38 +18,13 @@ const BarChartComponent = () => {
         console.error('Error fetching data:', error);
       });
 
-    axios.get('http://localhost:8080/menu', { headers })
-      .then(response => {
-        setMenuData(response.data.data);
-      })
-      .catch(error => {
-        console.error('Error fetching menu data:', error);
-      });
   }, []);
-
-  const calculateTotalPembelian = (menuId) => {
-    const totalQty = data.reduce((total, item) => {
-      if (item.id_menu === menuId) {
-        return total + item.qty;
-      }
-      return total;
-    }, 0);
-    return totalQty;
-  };
-
-  const chartData = menuData.map(menuItem => {
-    console.log(menuItem);
-    return {
-      nama_menu: menuItem.nama_menu,
-      total_pembelian: calculateTotalPembelian(menuItem.id),
-    };
-  });
 
   return (
     <div className='pt-16'>
-      <BarChart width={950} height={500} data={chartData}>
+      <BarChart width={950} height={500} data={data}>
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="nama_menu" interval={0} textAnchor="end" />
+        <XAxis dataKey="nama_menu" interval={0} textAnchor="middle" />
         <YAxis />
         <Tooltip />
         <Legend />
