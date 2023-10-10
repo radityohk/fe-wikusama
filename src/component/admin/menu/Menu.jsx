@@ -83,7 +83,7 @@ export default function Menu() {
                                 {menu && menu.map((menu, index) => (
                                     <tr key={menu.id} className="bg-white border-b hover:bg-gray-50">
                                         <td>
-                                            <img className="h-auto max-w-[100%]" src={`http://localhost:8080/foto/${menu.gambar}`} alt="product" />
+                                            <img className="h-auto max-w-[100%] rounded-md" src={`http://localhost:8080/foto/${menu.gambar}`} alt="product" />
                                         </td>
                                         <td className="px-6 py-4 text-center">{menu.nama_menu}</td>
                                         <td className="px-6 py-4 text-center">{menu.jenis}</td>

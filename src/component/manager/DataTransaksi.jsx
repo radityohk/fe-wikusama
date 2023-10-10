@@ -9,12 +9,12 @@ export default function DataTransaksi() {
         'Authorization': `Bearer ${sessionStorage.getItem('token')}`
     };
     const [transaksi, setTransaksi] = useState([]);
-    const [selectedDate, setSelectedDate] = useState(null);
-    const [filteredTransaksi, setFilteredTransaksi] = useState(null);
-    const [filterMonthly, setFilterMonthly] = useState(false);
+    const [filteredDate, setFilteredDate] = useState(null);
     const [filteredMonth, setFilteredMonth] = useState(null);
-    const [kasirFilter, setKasirFilter] = useState("");
+    const [filteredKasir, setFilteredKasir] = useState("");
+    const [filteredTransaksi, setFilteredTransaksi] = useState(null);
     const [uniqueKasirs, setUniqueKasirs] = useState([]);
+    console.log(filteredTransaksi)
 
     useEffect(() => {
         const fetchData = async () => {
@@ -39,10 +39,9 @@ export default function DataTransaksi() {
     }
 
     const resetFilters = () => {
-        setSelectedDate(null);
+        setFilteredDate(null);
         setFilteredTransaksi(null);
-        setKasirFilter("");
-        setFilterMonthly(false);
+        setFilteredKasir("");
         setFilteredMonth(null);
     };
 
@@ -53,7 +52,7 @@ export default function DataTransaksi() {
                 return tgl_transaksi.toDateString() === date.toDateString();
             });
             setFilteredTransaksi(filteredData);
-            setFilterMonthly(false); // Reset filter monthly
+            setFilteredMonth(null);
         }
     };
 
@@ -61,110 +60,80 @@ export default function DataTransaksi() {
         if (date) {
             const filteredData = transaksi.filter((t) => {
                 const tgl_transaksi = new Date(t.tgl_transaksi);
-                // console.log(tgl_transaksi)
-                console.log(tgl_transaksi.getMonth)
-                return tgl_transaksi.getMonth() === date.getMonth() &&
-                    tgl_transaksi.getFullYear() === date.getFullYear();
+                const dateinput = new Date(date)
+                return (
+                    tgl_transaksi.getMonth() === dateinput.getMonth() &&
+                    tgl_transaksi.getFullYear() === dateinput.getFullYear()
+                );
             });
             setFilteredTransaksi(filteredData);
+            setFilteredDate(null);
             console.log(filteredData)
-            setFilterMonthly(true); // Set filter monthly active
-            setFilteredMonth(date); // Save filtered month
         }
     };
 
     const filterByKasir = (kasirName) => {
         if (kasirName === "Pilih Kasir") {
-            resetFilters(); // Mengatur ulang filter saat memilih "Pilih Kasir"
+            resetFilters();
         } else {
             const filteredData = transaksi.filter((t) => {
                 return t.user.nama_user === kasirName;
             });
             setFilteredTransaksi(filteredData);
-            setSelectedDate(null);
-            setKasirFilter(kasirName);
-
-            if (filterMonthly) {
-                setFilterMonthly(true);
-            }
+            setFilteredKasir(kasirName);
         }
     };
 
-    const filterData = () => {
-        let filteredData = [...transaksi];
-
-        if (selectedDate) {
-            filteredData = filteredData.filter((t) => {
-                const tgl_transaksi = new Date(t.tgl_transaksi);
-                return tgl_transaksi.toDateString() === selectedDate.toDateString();
-            });
-        }
-
-        if (kasirFilter !== "" && kasirFilter !== "Pilih Kasir") {
-            filteredData = filteredData.filter((t) => {
-                return t.user.nama_user === kasirFilter;
-            });
-        }
-
-        return filteredData;
-    };
 
     return (
         <div>
             <div className="mt-5 mx-5 flex">
                 <div className="flex p-2 bg-gray-100 rounded-md border shadow-sm">
-                    <span className="flex-none">Filter By  : </span>
-                    {/* Dropdown untuk filter Tanggal (Harian/Bulanan) */}
-                    <select
-                        className="pl-1 bg-gray-100"
-                        value={filterMonthly ? "monthly" : "daily"}
-                        onChange={(e) => {
-                            if (e.target.value === "monthly") {
-                                resetFilters(); // Mengatur ulang filter saat beralih ke "Bulanan"
-                                setFilterMonthly(true);
-                            } else {
-                                resetFilters(); // Mengatur ulang filter saat beralih ke "Harian"
-                                setFilterMonthly(false);
-                            }
-                        }}
-                    >
-                        <option value="daily">Harian</option>
-                        <option value="monthly">Bulanan</option>
-                    </select>
-                    <select
-                        className="pl-1 bg-gray-100"
-                        value={kasirFilter}
-                        onChange={(e) => {
-                            filterByKasir(e.target.value);
-                        }}
-                    >
-                        <option value="">Pilih Kasir</option>
-                        {uniqueKasirs.map((kasir, index) => (
-                            <option key={index} value={kasir}>
-                                {kasir}
-                            </option>
-                        ))}
-                    </select>
-                    {filterMonthly ? (
+                    <div className="mr-4">
+                        <label htmlFor="datePicker">Filter Tanggal:</label>
                         <DatePicker
-                            className="pl-1 bg-gray-100"
-                            showMonthYearPicker
-                            selected={filteredMonth}
+                            id="datePicker"
+                            selected={filteredDate}
                             onChange={(date) => {
-                                setSelectedDate(date);
-                                filterByMonth(date);
-                            }}
-                        />
-                    ) : (
-                        <DatePicker
-                            className="pl-1 bg-gray-100"
-                            selected={selectedDate}
-                            onChange={(date) => {
-                                setSelectedDate(date);
+                                setFilteredDate(date);
                                 filterByDate(date);
                             }}
+                            dateFormat="dd/MM/yyyy"
                         />
-                    )}
+                    </div>
+                    <div className="mr-4">
+                        <label htmlFor="monthPicker">Filter Bulan:</label>
+                        <DatePicker
+                            id="monthPicker"
+                            selected={filteredMonth}
+                            onChange={(date) => {
+                                setFilteredMonth(date);
+                                filterByMonth(date);
+                            }}
+                            dateFormat="MM/yyyy"
+                            showMonthYearPicker
+                        />
+                    </div>
+                    <div className="mr-4">
+                        <label htmlFor="kasirSelect">Filter Nama Kasir:</label>
+                        <select
+                            id="kasirSelect"
+                            value={filteredKasir}
+                            onChange={(e) => {
+                                const selectedKasir = e.target.value;
+                                setFilteredKasir(selectedKasir);
+                                filterByKasir(selectedKasir);
+                            }}
+                        >
+                            <option value="">Pilih Kasir</option>
+                            {uniqueKasirs.map((kasirName) => (
+                                <option key={kasirName} value={kasirName}>
+                                    {kasirName}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <button onClick={resetFilters}>Reset Filter</button>
                 </div>
             </div>
 
@@ -180,7 +149,7 @@ export default function DataTransaksi() {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100 border-t border-gray-100">
-                        {selectedDate === null || selectedDate === undefined ? (
+                        {filteredTransaksi === null ? (
                             <>
                                 {transaksi.map((transaksi) => (
                                     <tr key={transaksi.id} className="hover:bg-gray-50">
@@ -201,7 +170,7 @@ export default function DataTransaksi() {
                         ) : (
                             <>
                                 {filteredTransaksi.map((transaksi) => (
-                                    <tr key={transaksi.id_transaksi} className="hover:bg-gray-50">
+                                    <tr key={transaksi.id} className="hover:bg-gray-50">
                                         <td className="px-6 py-4">{transaksi.user.nama_user}</td>
                                         <td className="px-6 py-4">{dateFormat(transaksi.tgl_transaksi)}</td>
                                         <td className="px-6 py-4">{transaksi.detail_transaksi[0].qty}</td>
@@ -220,6 +189,6 @@ export default function DataTransaksi() {
                     </tbody>
                 </table>
             </div>
-        </div>
+        </div >
     )
 }

@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
-import { useNavigate , useLocation} from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -25,7 +25,7 @@ export default function EditMenu() {
         //mengambil nama menu untuk verifikasi
         const getMenu = async () => {
             try {
-                const response = await axios.get("http://localhost:8080/menu/", {headers})
+                const response = await axios.get("http://localhost:8080/menu/", { headers })
                 const nama = response.data.data.map(res => res.nama_menu)
                 setCheckMenu(nama)
                 console.log(nama)
@@ -36,7 +36,7 @@ export default function EditMenu() {
         //mengambil data yang akan di update
         const getDataFromId = async () => {
             try {
-                const res = await axios.get("http://localhost:8080/menu/" + idMenu, {headers})
+                const res = await axios.get("http://localhost:8080/menu/" + idMenu, { headers })
                 setPrevData(res.data.data)
                 setLastMenuName(res.data.data.nama_menu)
                 console.log(res.data)
@@ -57,7 +57,7 @@ export default function EditMenu() {
 
     //post data ke database
     const handleClick = async e => {
-        try{
+        try {
             e.preventDefault()
             if (prevData.nama_menu !== lastMenuName && checkMenu.includes(prevData.nama_menu.trim())) {
                 toast.info("Nama menu sudah terdaftar");
@@ -68,10 +68,10 @@ export default function EditMenu() {
                 data.append('deskripsi', prevData.deskripsi)
                 data.append('gambar', selectImage)
                 data.append('harga', prevData.harga)
-                await axios.put("http://localhost:8080/menu/" + idMenu, data, {headers})
+                await axios.put("http://localhost:8080/menu/" + idMenu, data, { headers })
                 navigate("/menu")
             }
-        } catch (err){
+        } catch (err) {
             console.log(err)
         }
     }
@@ -110,7 +110,7 @@ export default function EditMenu() {
                             </div>
                             <div className="mb-4">
                                 <label className="block mb-2 text-sm font-medium text-white" htmlFor="file">Upload gambar</label>
-                                <input className="block w-full text-sm border rounded-lg cursor-pointer text-gray-400 focus:outline-none bg-gray-700 border-gray-600 placeholder-gray-400" aria-describedby="user_avatar_help" id="file" type="file" name="gambar" accept="image/" onChange={e => setSelectImage(e.target.files[0])} />
+                                <input defaultValue={prevData.gambar ? prevData.gambar.name : ''} className="block w-full text-sm border rounded-lg cursor-pointer text-gray-400 focus:outline-none bg-gray-700 border-gray-600 placeholder-gray-400" aria-describedby="user_avatar_help" id="file" type="file" name="gambar" accept="image/" onChange={e => setSelectImage(e.target.files[0])} />
                             </div>
                             <div>
                                 <label htmlFor="deskripsi" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Deskripsi</label>

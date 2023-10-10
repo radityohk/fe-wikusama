@@ -93,9 +93,15 @@ export default function Riwayat() {
     const filteredData = transaksi.filter((item) =>
       item.nama_pelanggan.toLowerCase().includes(inputKeyword.toLowerCase())
     );
-    setFilteredName(filteredData);
+
+    if (filteredData.length === 0) {
+      setFilteredName(null)
+    } else {
+      setFilteredName(filteredData);
+    }
   };
-  
+
+
 
   const handleCetakNota = (transaksi) => {
     setSelectedTransaksi(transaksi);
@@ -105,7 +111,7 @@ export default function Riwayat() {
   return (
     <div>
       <div className="flex max-w-min mt-5 p-2 ml-5 bg-gray-100 rounded-md border shadow-sm">
-      <input
+        <input
           type="text"
           value={keyword}
           className="pl-1 bg-gray-100"
@@ -165,14 +171,6 @@ export default function Riwayat() {
                       </div>
                     )}
                   </td>
-                  <td className="px-6 py-4">
-                    <button
-                      onClick={handleCetakNota}
-                      className="inline-flex items-center gap-1 rounded-full bg-green-50 px-2 py-1 text-xs font-semibold text-green-600"
-                    >
-                      Cetak Nota
-                    </button>
-                  </td>
                 </tr>
               ))
               : transaksi.map((transaksi) => (
@@ -204,7 +202,9 @@ export default function Riwayat() {
                     )}
                   </td>
                   <td>
-                  <NotaPDF transaksi={transaksi} />
+                    {transaksi.status === "lunas" ? (
+                      <NotaPDF transaksi={transaksi} />
+                    ) : null}
                   </td>
                   {/* <td className="px-6 py-4">
                     {transaksi.status === "lunas" && !showNota ? (

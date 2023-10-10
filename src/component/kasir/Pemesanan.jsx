@@ -106,24 +106,25 @@ export default function Pemesanan() {
         } else setShowModal(true);
       };
     
-      const removePesanan = (id) => {
+      const removePesanan = (id_menu) => {
+        setIdMenu(id_menu);
         setPesanan(
           pesanan.filter((pesanan) => {
-            return pesanan.id !== id;
+            return pesanan.id !== id_menu;
           })
         );
     
         setMenu(
           menu.map((menu) => {
-            if (menu.id === id) {
-              return { ...menu, qty: 0 };
+            if (menu.id === id_menu) {
+              return { ...menu, qty: menu.qty = 0 };
             } else {
               return menu;
             }
           })
         );
       };
-    
+
       const handleSelectChange = (e) => {
         setSelectedMeja(e.target.value);
       };
@@ -141,7 +142,7 @@ export default function Pemesanan() {
           tgl_transaksi: new Date(),
           id_meja: selectedOption.id,
           nama_pelanggan: namaPelanggan,
-          status: "belum_bayar",
+          status: "belum bayar",
           total: totalPrice,
           qty: totalQty,
           detail_transaksi,
@@ -287,11 +288,11 @@ export default function Pemesanan() {
                                                             <div className="flex flex-1 items-end justify-between text-sm">
                                                                 <p className="text-gray-500">Qty {product.qty}</p>
 
-                                                                <div className="flex">
+                                                                {/* <div className="flex">
                                                                     <button onClick={() => removePesanan(product.id_menu)} type="button" className="font-medium text-red-600 hover:text-red-700">
                                                                         Remove
                                                                     </button>
-                                                                </div>
+                                                                </div> */}
                                                             </div>
                                                         </div>
                                                     </li>

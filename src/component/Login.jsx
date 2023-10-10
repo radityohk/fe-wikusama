@@ -1,5 +1,7 @@
 import axios from "axios";
 import React, { useState } from "react";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import logo from "../nota/assets/coffee-logo-png-7520.png";
 
 export default function Login() {
@@ -19,16 +21,23 @@ export default function Login() {
             password: user.password
         }
 
-        await axios.post('http://localhost:8080/user/login', data)
-            .then((result) => {
-                console.log(result.data.data)
-                sessionStorage.setItem('nama_user', result.data.data[0].nama_user)
-                sessionStorage.setItem('token', result.data.token)
-                sessionStorage.setItem('logged', result.data.logged)
-                sessionStorage.setItem('role', result.data.data[0].role)
-                sessionStorage.setItem('id_user', result.data.data[0].id)
-                window.location.reload()
-            })
+        try {
+            const result = await axios.post('http://localhost:8080/user/login', data);
+
+            if (result.data.data.length === 0) {
+                toast.info("Data tidak ditemukan. Silakan cek kembali username dan password Anda.");
+            } else {
+                sessionStorage.setItem('nama_user', result.data.data[0].nama_user);
+                sessionStorage.setItem('token', result.data.token);
+                sessionStorage.setItem('logged', result.data.logged);
+                sessionStorage.setItem('role', result.data.data[0].role);
+                sessionStorage.setItem('id_user', result.data.data[0].id);
+                window.location.reload();
+            }
+        } catch (error) {
+            console.error(error);
+            toast.error("Terjadi kesalahan saat melakukan login. Silakan coba lagi.");
+        }
     }
 
     return (
@@ -54,7 +63,7 @@ export default function Login() {
                     </div>
                 </div>
             </div>
-
+            <ToastContainer />
         </section>
 
     )
