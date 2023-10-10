@@ -10,7 +10,7 @@ export default function Riwayat() {
   const [transaksi, setTransaksi] = useState([]);
   const [meja, setMeja] = useState([]);
   const [keyword, setKeyword] = useState("");
-  const [filteredName, setFilteredName] = useState(null);
+ 
   const [namaPelanggan, setNamaPelanggan] = useState("");
   const [selectedTransaksi, setSelectedTransaksi] = useState(null);
   const [showNota, setShowNota] = useState(false);
